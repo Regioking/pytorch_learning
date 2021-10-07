@@ -52,8 +52,8 @@ from torch.nn import init
 
 # init.normal_(net.weight, mean=0, std=0.01)
 # init.constant_(net.bias, val=0)
-for name,param in net.Parameters():
-    if 'weight' in param:
+for name,param in net.named_parameters():
+    if 'weight' in name:
 	    init.normal_(param,mean=0,std=0.1)
 
 loss = nn.MSELoss()
