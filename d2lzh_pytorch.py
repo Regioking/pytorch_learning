@@ -1,4 +1,9 @@
 import matplotlib.pyplot as plt
+import sys
+import torch
+import torchvision
+import torchvision.transforms as transforms
+
 
 
 def sgd(params, lr, batch_size):  # 地位是 pytorch中的optimizer
@@ -24,7 +29,7 @@ def get_fashion_mnist_labels(labels):
 
 
 def show_fashion_mnist(images, labels):
-    #d2l.use_svg_display()
+    # d2l.use_svg_display()
     # 这⾥的_表示我们忽略（不使⽤）的变量
     _, figs = plt.subplots(1, len(images), figsize=(12, 12))
     for f, img, lbl in zip(figs, images, labels):
@@ -53,7 +58,7 @@ def train_ch3(net, train_iter, test_iter, loss, num_epochs, batch_size,
 
             l.backward()
             if optimizer is None:
-                d2l.sgd(params, lr, batch_size)
+                sgd(params, lr, batch_size)
             else:
                 optimizer.step()
 
@@ -71,3 +76,22 @@ def evaluate_accuracy(data_iter, net):
         acc_sum += (net(X).argmax(dim=1) == y).float().sum().item()
         n += y.shape[0]
     return acc_sum / n
+
+
+def load_data_fashion_mnist(batch_size):
+    mnist_train = torchvision.datasets.FashionMNIST(root='~/Datasets/FashionMNIST',
+                                                    train=True, download=True, transform=transforms.ToTensor())
+
+    ''' transforms.ToTensor() 将尺⼨为 (H x W x C) 且数据位于[0, 255]的 PIL 图⽚或者数据类型为 np.uint8 的 NumPy 数组转换
+     为尺⼨为 (C x H x W) 且数据类型为 torch.float32 且位于[0.0, 1.0]的 Tensor'''
+    mnist_test = torchvision.datasets.FashionMNIST(root='~/Datasets/FashionMNIST',
+                                                   train=False, download=True, transform=transforms.ToTensor())
+    if sys.platform.startswith('win'):
+        num_workers = 0  # 0表示不⽤额外的进程来加速读取数据,其他的貌似会出问题
+    else:
+        num_workers = 4
+    train_iter = torch.utils.data.DataLoader(mnist_train,
+                                             batch_size=batch_size, shuffle=True, num_workers=num_workers)
+    test_iter = torch.utils.data.DataLoader(mnist_test,
+                                            batch_size=batch_size, shuffle=False, num_workers=num_workers)
+    return train_iter, test_iter
