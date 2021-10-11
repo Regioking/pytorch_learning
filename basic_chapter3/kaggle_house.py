@@ -78,12 +78,16 @@ def train(net, train_features, train_labels, test_features, test_labels, num_epo
     return train_ls, test_ls
 
 
+'''k折交叉验证'''
+
+
 def get_k_fold_data(k, i, X, y):
     # 返回第i折交叉验证时所需要的训练和验证数据
     assert k > 1
     fold_size = X.shape[0] // k
     X_train, y_train = None, None
     for j in range(k):
+        # silce(start, stop[, step]) 设置截取 fold_size = stop-start 个元素的切片
         idx = slice(j * fold_size, (j + 1) * fold_size)
         X_part, y_part = X[idx, :], y[idx]
         if j == i:
