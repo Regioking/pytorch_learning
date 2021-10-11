@@ -6,7 +6,6 @@ import time
 import sys
 import d2lzh_pytorch as d2l
 import numpy as np
-
 import torch.nn as nn
 from torch.nn import init
 
