@@ -34,6 +34,7 @@ class NestMLP(nn.Module):
     def forward(self, x):
         return self.net(x)
 
+
 net = nn.Sequential(NestMLP(), nn.Linear(30, 20), FancyMLP())
 X = torch.rand(2, 40)
 print(net)
