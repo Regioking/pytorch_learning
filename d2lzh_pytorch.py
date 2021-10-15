@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 import sys
 import torch
 import torchvision
+import time
 import torchvision.transforms as transforms
-
 
 
 def sgd(params, lr, batch_size):  # 地位是 pytorch中的optimizer
@@ -78,7 +78,7 @@ def evaluate_accuracy(data_iter, net):
     return acc_sum / n
 
 
-def load_data_fashion_mnist(batch_size,resize=None):
+def load_data_fashion_mnist(batch_size, resize=None):
     trans = []
     if resize:
         trans.append(torchvision.transforms.Resize(size=resize))
@@ -103,6 +103,23 @@ def load_data_fashion_mnist(batch_size,resize=None):
     return train_iter, test_iter
 
 
+class FlattenLayer(torch.nn.Module):
+    def __init__(self):
+        super(FlattenLayer, self).__init__()
+
+    def forward(self, x):  # x shape: (batch, *, *, ...)
+        return x.view(x.shape[0], -1)
+
+
+class GlobalAvgPool2d(torch.nn.Module):
+    # 全局平均池化层可通过将池化窗⼝形状设置成输⼊的⾼和宽实现
+    def __init__(self):
+        super(GlobalAvgPool2d, self).__init__()
+
+    def forward(self, x):
+        return torch.nn.functional.avg_pool2d(x, kernel_size=x.size()[2:])
+
+
 def semilogy(x_vals, y_vals, x_label, y_label, x2_vals=None,
              y2_vals=None, legend=None, figsize=(3.5, 2.5)):
     # d2l.set_figsize(figsize)
@@ -113,3 +130,29 @@ def semilogy(x_vals, y_vals, x_label, y_label, x2_vals=None,
         plt.semilogy(x2_vals, y2_vals, linestyle=':')
         plt.legend(legend)
     plt.show()
+
+
+def train_ch5(net, train_iter, test_iter, batch_size, optimizer,
+              device, num_epochs):
+    net = net.to(device)
+    print("training on ", device)
+    loss = torch.nn.CrossEntropyLoss()
+    batch_count = 0
+    for epoch in range(num_epochs):
+        train_l_sum, train_acc_sum, n, start = 0.0, 0.0, 0, time.time()
+        for X, y in train_iter:
+            X = X.to(device)
+            y = y.to(device)
+            y_hat = net(X)
+            l = loss(y_hat, y)
+            optimizer.zero_grad()
+            l.backward()
+            optimizer.step()
+            train_l_sum += l.cpu().item()
+            train_acc_sum += (y_hat.argmax(dim=1) ==
+                              y).sum().cpu().item()
+            n += y.shape[0]
+            batch_count += 1
+        test_acc = evaluate_accuracy(test_iter, net)
+        print('epoch %d, loss %.4f, train acc %.3f, test acc %.3f,time %.1f sec' % (
+        epoch + 1, train_l_sum / batch_count, train_acc_sum / n, test_acc, time.time() - start))
