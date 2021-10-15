@@ -78,14 +78,20 @@ def evaluate_accuracy(data_iter, net):
     return acc_sum / n
 
 
-def load_data_fashion_mnist(batch_size):
+def load_data_fashion_mnist(batch_size,resize=None):
+    trans = []
+    if resize:
+        trans.append(torchvision.transforms.Resize(size=resize))
+    trans.append(torchvision.transforms.ToTensor())
+
+    transform = torchvision.transforms.Compose(trans)
     mnist_train = torchvision.datasets.FashionMNIST(root='~/Datasets/FashionMNIST',
-                                                    train=True, download=True, transform=transforms.ToTensor())
+                                                    train=True, download=True, transform=transform)
 
     ''' transforms.ToTensor() 将尺⼨为 (H x W x C) 且数据位于[0, 255]的 PIL 图⽚或者数据类型为 np.uint8 的 NumPy 数组转换
      为尺⼨为 (C x H x W) 且数据类型为 torch.float32 且位于[0.0, 1.0]的 Tensor'''
     mnist_test = torchvision.datasets.FashionMNIST(root='~/Datasets/FashionMNIST',
-                                                   train=False, download=True, transform=transforms.ToTensor())
+                                                   train=False, download=True, transform=transform)
     if sys.platform.startswith('win'):
         num_workers = 0  # 0表示不⽤额外的进程来加速读取数据,其他的貌似会出问题
     else:

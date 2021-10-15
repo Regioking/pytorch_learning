@@ -47,12 +47,12 @@ batch_count = 0
 for epoch in range(num_epochs):
     train_l_sum, train_acc_sum, n, start = 0.0, 0.0, 0, time.time()
     for x, y in train_iter:
-        #print(y.shape)(256)
-        #print(x.shape)
+        #print(y.shape)  # (256)
+        #print(x.shape)  # (256,1,28,28)
         x = x.to(device)
         y = y.to(device)
         y_hat = net(x)
-        #print(y_hat.shape) (256,10)
+        #print(y_hat.shape)  # (256,10)
         l = loss(y_hat, y)
         optimizer.zero_grad()
         l.backward()
