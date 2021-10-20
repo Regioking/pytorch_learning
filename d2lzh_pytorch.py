@@ -80,6 +80,7 @@ def evaluate_accuracy(data_iter, net):
 
 def load_data_fashion_mnist(batch_size, resize=None):
     trans = []
+    # 输入可以是int，此时表示将输入图像的短边resize到这个int数
     if resize:
         trans.append(torchvision.transforms.Resize(size=resize))
     trans.append(torchvision.transforms.ToTensor())
