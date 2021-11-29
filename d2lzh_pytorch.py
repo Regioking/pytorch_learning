@@ -133,11 +133,10 @@ def semilogy(x_vals, y_vals, x_label, y_label, x2_vals=None,
     plt.show()
 
 
-def train_ch5(net, train_iter, test_iter, batch_size, optimizer,
-              device, num_epochs):
+def train_ch5(net, train_iter, test_iter, optimizer,
+              device, num_epochs, loss=torch.nn.CrossEntropyLoss()):
     net = net.to(device)
     print("training on ", device)
-    loss = torch.nn.CrossEntropyLoss()
     batch_count = 0
     for epoch in range(num_epochs):
         train_l_sum, train_acc_sum, n, start = 0.0, 0.0, 0, time.time()
@@ -156,4 +155,4 @@ def train_ch5(net, train_iter, test_iter, batch_size, optimizer,
             batch_count += 1
         test_acc = evaluate_accuracy(test_iter, net)
         print('epoch %d, loss %.4f, train acc %.3f, test acc %.3f,time %.1f sec' % (
-        epoch + 1, train_l_sum / batch_count, train_acc_sum / n, test_acc, time.time() - start))
+            epoch + 1, train_l_sum / batch_count, train_acc_sum / n, test_acc, time.time() - start))

@@ -33,6 +33,8 @@ n_train = train_data.shape[0]
 train_features = torch.tensor(all_features[:n_train].values, dtype=torch.float)
 test_features = torch.tensor(all_features[n_train:].values, dtype=torch.float)
 train_labels = torch.tensor(train_data.SalePrice.values, dtype=torch.float).view(-1, 1)
+print(train_features.shape) # (1460, 354)
+print(train_labels.shape)  # (1460, 1)
 
 
 class Net(nn.Module):
