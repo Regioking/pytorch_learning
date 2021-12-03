@@ -135,6 +135,7 @@ for epoch in range(num_epochs):
         images = images.reshape(images.size(0), 1, 28, 28)
         save_image(denorm(images), os.path.join(sample_dir, 'real_images.png'))
 
+
         # 保存假图像
     if (epoch % 5) == 0:
         fake_images = fake_images.reshape(fake_images.size(0), 1, 28, 28)
